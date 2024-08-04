@@ -1,31 +1,34 @@
 <?php
-
     require "connection.php";
 
-    $username = $_POST['username'];
-    $email_id = $_POST['email_id'];
-    $password = $_POST['password'];
-    $phone_number = $_POST['phone_number'];
+    $username = mysqli_real_escape_string($conn, $_POST['username']);
+    $email_id = mysqli_real_escape_string($conn, $_POST['email_id']);
+    $password = mysqli_real_escape_string($conn, $_POST['password']);
+    $phone_number = mysqli_real_escape_string($conn, $_POST['phone_number']);
 
-    $check_sql = "select * from users where username='$username' or email_id='$email_id' or phone_number='$phone_number' ";
-    $check = mysqli_query($conn,$check_sql);
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-    if(mysqli_num_rows($check))
+    $check_sql = "SELECT * FROM users WHERE username='$username' OR email_id='$email_id' OR phone_number='$phone_number'";
+    $check = mysqli_query($conn, $check_sql);
+
+    if(mysqli_num_rows($check) > 0) 
     {
-        echo "User data already exists";
-    }
-    else
+        $response = array('status' => 'error', 'message' => 'User data already exists');
+        echo json_encode($response);
+    } 
+    else 
     {
-        $query = "insert into users(username,email_id,password,phone_number) VALUES('$username', '$email_id', '$password', '$phone_number') ";
-
-        if(mysqli_query($conn,$query))
+        $query = "insert into users (username, email_id, password, phone_number) VALUES ('$username', '$email_id', '$hashed_password', '$phone_number')";
+        
+        if(mysqli_query($conn, $query)) 
         {
-            echo "success";
-        }
-        else
+            $response = array('status' => 'success', 'message' => 'registration successfull');
+        } 
+        else 
         {
-            echo "unsuccess";   
+            $response = array('status' => 'error', 'message' => 'registration failed', 'error' => mysqli_error($conn));
         }
+        echo json_encode($response);
     }
 
     mysqli_close($conn);
