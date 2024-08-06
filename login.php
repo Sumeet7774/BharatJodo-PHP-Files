@@ -2,12 +2,12 @@
 
     require 'connection.php';
 
-    $email_id = $_POST['email_id'];
+    $username = $_POST['username'];
     $phone_number = $_POST['phone_number'];
 
-    $check_sql = "select * from users WHERE email_id = ? AND phone_number = ?";
+    $check_sql = "select * from users WHERE username = ? AND phone_number = ?";
     $stmt = $conn->prepare($check_sql);
-    $stmt->bind_param("ss", $email_id, $phone_number);
+    $stmt->bind_param("ss", $username, $phone_number);
     $stmt->execute();
     $result = $stmt->get_result();
 
