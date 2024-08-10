@@ -15,21 +15,18 @@
         if($result->num_rows > 0)
         {
             $row = $result->fetch_assoc();
-            $response = array('status' => 'found', 'email_id' => $row['email_id']);
+            echo $row['email_id'];
         }
         else
         {
-            $response = array('status' => 'not found', 'message' => 'user not found');
+            echo "user not found"; 
         }
-
-        echo json_encode($response);
 
         $stmt->close();
         $conn->close();
     }
     catch(Exception $e)
     {
-        $response = array('status' => 'error', 'message' => 'Error');
-        echo json_encode($response);
+        echo "Error";
     }
 ?>
