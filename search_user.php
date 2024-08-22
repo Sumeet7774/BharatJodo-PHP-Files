@@ -4,7 +4,7 @@
 
     $username = $_POST['username'];
 
-    $check_sql = "select username, phone_number from users WHERE username = ?";
+    $check_sql = "select user_id, username, phone_number from users WHERE username = ?";
     $stmt = $conn->prepare($check_sql);
     $stmt->bind_param("s", $username);
     $stmt->execute();
