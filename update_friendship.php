@@ -1,31 +1,33 @@
 <?php
 
-    require "connection.php";
+    require 'connection.php';
 
-    $friendship_id = $_POST['friendship_id'];
+    $friendshipId = $_POST['friendship_id'];
     $status = $_POST['status'];
 
-    try
+    try 
     {
-        $query = "update friendship set status=? where friendship_id=? ";
+        $query = "update friendship set status = ? WHERE friendship_id = ?";
         $stmt = $conn->prepare($query);
-        $stmt->bind_param("si",$status,$friendship_id);
+        $stmt->bind_param("si", $status, $friendshipId);
         $stmt->execute();
 
-        if($stmt->affected_rows > 0)
+        if ($stmt->affected_rows > 0) 
         {
-            echo "Friendship status updated";
-        }
-        else
+            $response = array('status' => 'success', 'message' => 'Friendship status updated');
+            echo json_encode($response);
+        } 
+        else 
         {
-            echo "failed";
+            $response = array('status' => 'failed', 'message' => 'Failed to update status');
+            echo json_encode($response);
         }
 
         $stmt->close();
         $conn->close();
-    }   
-    catch(Exception $e)
+    } 
+    catch (Exception $e) 
     {
-        echo "Error";
+        echo "Error: " . $e->getMessage();
     }
 ?>
