@@ -7,9 +7,9 @@
 
     try 
     {
-        $check_sql = "select * from friendship WHERE (user_id = ? AND friend_id = ?) OR (user_id = ? AND friend_id = ?)";
+        $check_sql = "select * from friendship WHERE user_id = ? AND friend_id = ?";
         $stmt = $conn->prepare($check_sql);
-        $stmt->bind_param("iiii", $senderUserId, $receiverUserId, $receiverUserId, $senderUserId);    
+        $stmt->bind_param("ii", $senderUserId, $receiverUserId);    
         $stmt->execute();
         $result = $stmt->get_result();
 
