@@ -5,32 +5,41 @@ require 'connection.php';
 $senderUserId = $_POST['sender_user_id'];                   // ID of the user sending the request
 $receiverUserId = $_POST['receiver_user_id'];               // ID of the user receiving the request
 
-    try
+    try 
     {
-        $check_sql = "select status from friendship where (user_id = ? and friend_id = ?) and (user_id = ? and friend_id = ?)";
-    
+        $check_sql="select user_id, friend_id, status from friendship where (user_id = ? and friend_id = ?) or (user_id = ? AND friend_id = ?)";
+
         $stmt = $conn->prepare($check_sql);
         $stmt->bind_param("iiii", $senderUserId, $receiverUserId, $receiverUserId, $senderUserId);
         $stmt->execute();
         $result = $stmt->get_result();
 
-        if ($result->num_rows > 0) 
-        {
-            $row = $result->fetch_assoc();
-            $currentStatus = $row['status'];
+        $status1 = null;
+        $status2 = null;
 
-            if ($currentStatus == 'pending') 
+        while ($row = $result->fetch_assoc()) 
+        {
+            if ($row['user_id'] == $senderUserId && $row['friend_id'] == $receiverUserId) 
             {
-                echo json_encode(['status' => 'pending']);
+                $status1 = $row['status'];
             } 
-            elseif ($currentStatus == 'accepted') 
+            elseif ($row['user_id'] == $receiverUserId && $row['friend_id'] == $senderUserId) 
             {
-                echo json_encode(['status' => 'accepted']);
+                $status2 = $row['status'];
             }
-            elseif ($currentStatus == 'rejected') 
-            {
-                echo json_encode(['status' => 'rejected']);
-            }
+        }
+
+        if ($status1 === 'accepted' && $status2 === 'accepted') 
+        {
+            echo json_encode(['status' => 'accepted']);
+        } 
+        else if ($status1 === 'pending' || $status2 === 'pending') 
+        {
+            echo json_encode(['status' => 'pending']);
+        } 
+        else if ($status1 === 'rejected' || $status2 === 'rejected') 
+        {
+            echo json_encode(['status' => 'rejected']);
         } 
         else 
         {
@@ -39,9 +48,10 @@ $receiverUserId = $_POST['receiver_user_id'];               // ID of the user re
 
         $stmt->close();
         $conn->close();
-    }
+
+    } 
     catch (Exception $e) 
     {
-        echo "Error: " . $e->getMessage();
+        echo json_encode(['error' => $e->getMessage()]);
     }
 ?>
