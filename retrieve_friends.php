@@ -4,7 +4,7 @@
 
     $user_id = $_POST['user_id'];                // id of the user which will technically be friend_id in the database table for which you want to retrieve his all friends
 
-    $query="select f.friendship_id, u.username, u.phone_number 
+    $query="select f.friendship_id, f.friend_id, u.username, u.phone_number 
             from friendship f
             join users u on f.user_id=u.user_id
             where f.friend_id = '$user_id'
